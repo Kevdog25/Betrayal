@@ -48,7 +48,6 @@ public class HouseManager : MonoBehaviour {
 	Room[,] Basement;
 	Room[,] Upstairs;
 	PathCreator pathMaker;
-	int thisIsntaVariable;
 
 	List<GameObject> uniqueRooms;
 	Scenario scenario;
