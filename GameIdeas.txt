@@ -1,0 +1,87 @@
+Permanent speed mechanic: 
+	Characters move speed is based on their "energy" level which does not
+	regenerate naturally. Can be gained/lost from different events/effects.
+	
+		Players can lose permanent speed for a temporary speed boost.
+		(Incentive for players to explore slowly in the beginning, and gives them an
+		interesting choice in the more stressful sections.)
+
+Stats:
+	Speed
+	Strength
+	Intelligence
+	Luck
+
+Characters:
+	Professor
+		strength - low
+		speed - low
+		intelligence - high
+		luck - med
+		
+		Special - Teleporter Pad:
+			Has a teleporter that he can carry around. 2 Pads in total, with one starting where he starts.
+			Can only carry 1 at a time, and has a cooldown.
+
+	Spy
+		strength - med
+		speed - high
+		intelligence med
+		luck - low/none
+
+		Special - Stealth:
+			Can become invisible while standing still.
+
+Scenarios:
+	Heart of the House:
+		Betrayer becomes the house, able to control and posses objects throughout. Defeated when the adventurers venture into the basement
+		and destroy the heart.
+	Spooky Ghost:
+		Betrayer is killed in a mysterious accident. They are the brought back to the world as a ghost.
+			Ghost
+				strength - low
+				speed - very low
+				intelligence - N/A
+				luck - N/A
+
+				Turns any player it touches into a ghost.
+				Does not collide with walls.
+				// Maybe it can create AI ghost decoy to trick players
+				// Gets more visible as it gets closer
+	Vampire Bite:
+		Betrayer is bitten, becoming a vampire.
+			Vampire:
+				strength - low/high
+				speed - low/high
+				intelligence - low
+				luck - N/A
+				
+				Their need to feast on blood causes them to increase in speed and strength when the players
+				are on lower health.
+					Special - Stalk:
+						Can cast a highly telegraphed teleport ability to move through rooms quickly.
+	Zombie Rising:
+		Betrayer finds a magic scepter, giving them dark powers over the undead.
+		It turns them evil.
+		Zombies can spawn in rooms, and are stronger the closer the betrayer is.
+			Zombie Lord:
+				strength - low/very high
+				speed - med
+				intelligence - N/A
+				luck - N/A
+				
+				Special - Call of the Undead:
+					Gains power based on the total number of zombies alive
+			Zombie:
+				strength - low/high
+				speed - low
+				intelligence - N/A
+				luck - N/A
+				
+				Special - Risin:
+					Gains power when near to the scepter.
+
+	
+						
+				
+
