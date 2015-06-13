@@ -42,7 +42,8 @@ public class HouseManager : MonoBehaviour {
 	GameObject BasementRooms;
 	GameObject UpstairsRooms;
 	GameObject house;
-	GameObject shroud;
+	GameObject shroudParent;
+	GameObject doorParent;
 	
 	Room[,] Ground;
 	Room[,] Basement;
@@ -90,8 +91,10 @@ public class HouseManager : MonoBehaviour {
 		UpstairsRooms = new GameObject ();
 		UpstairsRooms.name = "UpstairsFloor";
 
-		shroud = new GameObject();
-		shroud.name = "Shroud";
+		shroudParent = new GameObject();
+		shroudParent.name = "Shroud";
+		doorParent = new GameObject();
+		doorParent.name = "Doors";
 
 		GroundRooms.transform.parent = roomContainerClone.transform;
 		BasementRooms.transform.parent = roomContainerClone.transform;
@@ -130,7 +133,7 @@ public class HouseManager : MonoBehaviour {
 				shroudClone.transform.localScale = new Vector3(RoomSize*ShroudSizeRatio,
 				                                               RoomSize*ShroudSizeRatio,
 				                                               1);
-				shroudClone.transform.parent = shroud.transform;
+				shroudClone.transform.parent = shroudParent.transform;
 				// If the ShroudOn setting is enabled
 				if(ShroudOn)
 					shroudClone.GetComponent<ParticleSystem>().Play();
@@ -184,6 +187,9 @@ public class HouseManager : MonoBehaviour {
 							doorTrans.RotateAround(room.RoomObject.transform.position,
 							                       Vector3.up,
 							                       (k*360f/doors.Length));
+							// parent all the doors to the doors gameObject for clarity.
+							doorTrans.parent = doorParent.transform;
+
 							DoorController doorControl = doorClone.GetComponent<DoorController>();
 							if(k == 0){
 								var otherRoomControl = floor[i,j+1].RoomObject.GetComponent<RoomController>();
