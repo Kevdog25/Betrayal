@@ -224,7 +224,7 @@ Transform:
   m_LocalScale: {x: 250, y: 250, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!1001 &972703969
 Prefab:
   m_ObjectHideFlags: 0
@@ -348,7 +348,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 460106, guid: 65284681eb297c846988fb6e400dcedd, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 11470398, guid: 65284681eb297c846988fb6e400dcedd, type: 2}
       propertyPath: StartMenu

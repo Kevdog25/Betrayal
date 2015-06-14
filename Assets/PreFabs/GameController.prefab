@@ -57,7 +57,7 @@ MonoBehaviour:
   Scenarios:
   - {fileID: 174466, guid: 0512196df9471634ea731ee270fa0f24, type: 2}
   BoundingWall: {fileID: 155250, guid: fa68a64dc2f813f4fa9d9a3f331bb05b, type: 2}
-  Player: {fileID: 172806, guid: a1c15e8d036965e4c99ea766be832a7f, type: 2}
+  Player: {fileID: 172612, guid: a1c15e8d036965e4c99ea766be832a7f, type: 2}
 --- !u!114 &11460666
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -77,8 +77,10 @@ MonoBehaviour:
   RandomizeRooms: 0
   RoomSize: 25
   FloorGenSetting: 3
+  NumberOfFloors: 2
   ShroudParticles: {fileID: 127704, guid: f6c81d6469bed4e418f3df2c40784df3, type: 2}
   ShroudSizeRatio: 1
+  Floor: {fileID: 188500, guid: dd7902c62cf2c4847a908084f55c9ce0, type: 2}
   DebugOverlay: 0
   DebugOverlaySquare: {fileID: 158326, guid: 5078e2c1c476c424d8be730467772008, type: 2}
   DebugRoomStyle: {fileID: 156174, guid: 711885d7928aa9e498ad19cf3cab5c45, type: 2}

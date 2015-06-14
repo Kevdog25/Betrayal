@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 	public float Speed;
 	public float JumpSpeed;
 	public float FallSpeed;
+	public int Layer;
 	#endregion
 
 	//public GameObject textCanvas;
@@ -80,6 +81,34 @@ public class PlayerController : MonoBehaviour {
 			if(Input.GetKeyDown("e")){
 				Interactions[i].Interact(gameObject);
 			}
+		}
+	}
+
+	/// <summary>
+	/// Sets the layer mask for the camera to only display certain floors at once.
+	/// If set to 0, or a layer that isnt a floor, it will simply update the camera.
+	/// </summary>
+	/// <param name="layer">The layer that the player is currently in.</param>
+	public void UpdateFloorMask(int layer){
+		int firstFloor = LayerMask.NameToLayer("Floor0");
+		// If the sent layer is a valid floor,
+		// then update the mask.
+		int mask = 1 << 0;
+		// Get the layer mask for all default usual layers.
+		for(var i = 1; i < firstFloor; i++){
+			mask = mask | (1 << i);
+		}
+		if(layer >= firstFloor){
+			// Skip all the floors
+			// Now add the one the player is on.
+			mask |= 1 << layer;
+		}
+		Layer = mask;
+		// Update the camera if necessary.
+		// If this is the player being watched by the camera
+		if(Camera.main.GetComponent<CameraController>().Target.Equals(transform)){
+			Camera.main.cullingMask = mask;
+			Debug.Log("Camera cullingMask: " + Camera.main.cullingMask);
 		}
 	}
 

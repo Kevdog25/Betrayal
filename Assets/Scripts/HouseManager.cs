@@ -21,10 +21,18 @@ public class HouseManager : MonoBehaviour {
 		"2: Reverse Path Creation\n" +
 		"3: Nodal Branching.")]
 	public int FloorGenSetting;
+	[Tooltip("The number of floors for the house to have.")]
+	public int NumberOfFloors;
 	[Tooltip("The particle effects to shroud undiscovered rooms.")]
 	public GameObject ShroudParticles;
 	[Tooltip("How large the shroud covers are compared to the rooms.")]
 	public float ShroudSizeRatio;
+	[Tooltip("Prefab to set up floor heiarchy.")]
+	public GameObject Floor;
+	[Tooltip("The height of each floor.")]
+	public float FloorHeight;
+
+
 	[Header("Debug Settings")]
 	[Tooltip("Whether or not to display the room numbers and grid.")]
 	public bool DebugOverlay;
@@ -38,16 +46,12 @@ public class HouseManager : MonoBehaviour {
 	#endregion
 
 	#region Private Variables
-	GameObject GroundRooms;
-	GameObject BasementRooms;
-	GameObject UpstairsRooms;
+	GameObject[] floorParents;
 	GameObject house;
-	GameObject shroudParent;
-	GameObject doorParent;
+	GameObject[] shroudParents;
+	GameObject[] doorParents;
 	
-	Room[,] Ground;
-	Room[,] Basement;
-	Room[,] Upstairs;
+	Room[][,] floors;
 	PathCreator pathMaker;
 
 	List<GameObject> uniqueRooms;
@@ -68,45 +72,72 @@ public class HouseManager : MonoBehaviour {
 	
 
 		SetUpRoomHeirarchy ();
+		for(var i = 0; i < NumberOfFloors; i++){
+			GenerateFloor (i);
+		}
+		SetCameraLayers();
+	}
 
-		// Initialize and set up the Ground Floor
-		Ground = new Room[HouseWidth,HouseLength];
-		InitializeFloor (Ground);
-		GenerateFloor (Ground,GroundRooms);
+	void SetCameraLayers(){
+		for(var i = 0; i < NumberOfFloors; i++){
+			foreach(Transform trans in floorParents[i].GetComponentsInChildren<Transform>(true)){
+				trans.gameObject.layer = LayerMask.NameToLayer(string.Format("Floor{0}",i));
+			}
+		}
+		//Camera.main.cullingMask = ~(1 << LayerMask.NameToLayer("Floor0"));
 	}
 
 	/// <summary>
 	/// Sets the appropriate parents and transforms for organization.
 	/// </summary>
 	void SetUpRoomHeirarchy(){
+		// Initialize and set up the Ground Floor
+		floors = new Room[NumberOfFloors][,];
+		floorParents = new GameObject[NumberOfFloors];
+		shroudParents = new GameObject[NumberOfFloors];
+		doorParents = new GameObject[NumberOfFloors];
+
+		for(var i = 0; i < NumberOfFloors;i++){
+			floors[i] = new Room[HouseWidth,HouseLength];
+			InitializeFloor (floors[i]);
+		}
+
+
+		// Create the house and parent the floors
 		house = new GameObject();
 		house.name = "House";
-		var roomContainerClone = Instantiate (house);
-		roomContainerClone.transform.parent = transform;
-		roomContainerClone.name = "House";
-		GroundRooms = new GameObject ();
-		GroundRooms.name = "GroundFloor";
-		BasementRooms = new GameObject ();
-		BasementRooms.name = "BasementFloor";
-		UpstairsRooms = new GameObject ();
-		UpstairsRooms.name = "UpstairsFloor";
+		for(var i = 0; i < NumberOfFloors; i++){
+			floorParents[i] = Instantiate(Floor);
+			floorParents[i].name = string.Format("Floor{0}",i);
+			floorParents[i].transform.parent = house.transform;
 
-		shroudParent = new GameObject();
-		shroudParent.name = "Shroud";
-		doorParent = new GameObject();
-		doorParent.name = "Doors";
+			floorParents[i].transform.position = new Vector3(0,i*FloorHeight,0);
+			// Create a box collider to detect when players enter and leave floors. 
+			BoxCollider floorTrigger = floorParents[i].GetComponent<BoxCollider>();
 
-		GroundRooms.transform.parent = roomContainerClone.transform;
-		BasementRooms.transform.parent = roomContainerClone.transform;
-		UpstairsRooms.transform.parent = roomContainerClone.transform;
+			// Set the trigger to be the size of the floor, and right in the middle;
+			floorTrigger.center = new Vector3(0,FloorHeight/2f,0);
+			floorTrigger.size = new Vector3(HouseWidth * RoomSize,
+			                                FloorHeight,
+			                                HouseLength * RoomSize);
+
+			shroudParents[i] = new GameObject();
+			shroudParents[i].name = "Shroud";
+			shroudParents[i].transform.SetParent(floorParents[i].transform,false);
+			doorParents[i] = new GameObject();
+			doorParents[i].name = "Doors";
+			doorParents[i].transform.SetParent(floorParents[i].transform,false);
+		}
 	}
 
 	/// <summary>
 	/// Generates the floor plan.
 	/// </summary>
-	/// <param name="floor">Floor.</param>
-	/// <param name="parent">The gameobject to parent all the rooms to.</param>
-	void GenerateFloor(Room[,] floor,GameObject parent){
+	/// <param name="floorIndex">The index of the level of the house to generate.</para>
+	void GenerateFloor(int floorIndex){
+		Room[,] floor = floors[floorIndex];
+		GameObject parent = floorParents[floorIndex];
+
 		// Select the generation setting
 		switch(FloorGenSetting){
 		case 0:
@@ -129,11 +160,11 @@ public class HouseManager : MonoBehaviour {
 			for (int j=0; j<HouseLength; j++) {
 				// Cover the room with a shroud of smoke initially
 				GameObject shroudClone = Instantiate(ShroudParticles) as GameObject;
-				shroudClone.transform.position += floor[i,j].Position;
+				shroudClone.transform.localPosition += floor[i,j].Position;
 				shroudClone.transform.localScale = new Vector3(RoomSize*ShroudSizeRatio,
 				                                               RoomSize*ShroudSizeRatio,
 				                                               1);
-				shroudClone.transform.parent = shroudParent.transform;
+				shroudClone.transform.SetParent(shroudParents[floorIndex].transform,false);
 				// If the ShroudOn setting is enabled
 				if(ShroudOn)
 					shroudClone.GetComponent<ParticleSystem>().Play();
@@ -147,7 +178,7 @@ public class HouseManager : MonoBehaviour {
 					// Place the room in real space.
 					GameObject room = PlaceRoom(floor[i,j]);
 					// Set its parent to the parent, for categorization.
-					room.transform.parent = parent.transform;
+					room.transform.SetParent(parent.transform,false);
 
 					floor[i,j].RoomObject.GetComponent<RoomController>().Shroud = shroudClone;
 				}
@@ -155,15 +186,17 @@ public class HouseManager : MonoBehaviour {
 		}
 
 		// Set up the doors
-		PlaceDoors(floor);
+		PlaceDoors(floorIndex);
 	}
 
 	/// <summary>
 	/// Places the doors for the floor.
 	/// This is done based on the <see cref="Room.GetDoors()"/> method.
 	/// </summary>
-	/// <param name="floor">Floor.</param>
-	void PlaceDoors(Room[,] floor){
+	/// <param name="floorIndex">Index of the floor to place the doors in.</param>
+	void PlaceDoors(int floorIndex){
+		Room[,] floor = floors[floorIndex];
+
 		for(var i = 0; i < floor.GetLength(0); i++){
 			for(var j = 0; j < floor.GetLength(1); j++){
 				Room room = floor[i,j];
@@ -187,8 +220,8 @@ public class HouseManager : MonoBehaviour {
 							doorTrans.RotateAround(room.RoomObject.transform.position,
 							                       Vector3.up,
 							                       (k*360f/doors.Length));
-							// parent all the doors to the doors gameObject for clarity.
-							doorTrans.parent = doorParent.transform;
+							// Parent all the doors to the doors gameObject for clarity.
+							doorTrans.parent = doorParents[floorIndex].transform;
 
 							DoorController doorControl = doorClone.GetComponent<DoorController>();
 							if(k == 0){
@@ -389,6 +422,7 @@ public class HouseManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="floor">Floor to initialize.</param>
 	void InitializeFloor(Room[,] floor){
+
 		for(int i = 0; i < HouseWidth;i++){
 			for(int j = 0; j < HouseLength;j++){
 				floor[i,j] = new Room();
