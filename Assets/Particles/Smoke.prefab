@@ -1081,7 +1081,7 @@ ParticleSystem:
     dampen: 0
     bounce: 1
     energyLossOnCollision: 0
-    minKillSpeed: 0
+    minKillSpeed: 4.76000023
     particleRadius: .00999999978
     collidesWith:
       serializedVersion: 2

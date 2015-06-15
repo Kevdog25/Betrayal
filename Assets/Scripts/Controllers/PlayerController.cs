@@ -108,7 +108,6 @@ public class PlayerController : MonoBehaviour {
 		// If this is the player being watched by the camera
 		if(Camera.main.GetComponent<CameraController>().Target.Equals(transform)){
 			Camera.main.cullingMask = mask;
-			Debug.Log("Camera cullingMask: " + Camera.main.cullingMask);
 		}
 	}
 

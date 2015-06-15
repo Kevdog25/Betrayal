@@ -10,6 +10,7 @@ GameObject:
   - 4: {fileID: 439976}
   - 65: {fileID: 6580538}
   - 114: {fileID: 11437320}
+  - 114: {fileID: 11479992}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -52,6 +53,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f95677b906ea934aac8018f628bf6f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &11479992
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 188500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e7c7a7802215643bd2028d693a5601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloorHeight: 10
+  ShroudParticles: {fileID: 127704, guid: f6c81d6469bed4e418f3df2c40784df3, type: 2}
+  ShroudSizeRatio: 1
+  AllowedRoomStyles: []
+  DebugRoomStyle: {fileID: 156174, guid: 711885d7928aa9e498ad19cf3cab5c45, type: 2}
+  ShroudOn: 1
+  VisibleOnStart: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

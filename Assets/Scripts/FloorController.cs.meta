@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 80e7c7a7802215643bd2028d693a5601
+timeCreated: 1434333727
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - ShroudParticles: {fileID: 127704, guid: f6c81d6469bed4e418f3df2c40784df3, type: 2}
+  - DebugRoomStyle: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

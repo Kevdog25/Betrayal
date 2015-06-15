@@ -14,7 +14,6 @@ public class VisibilityManager : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		Debug.Log("On trigger");
 		if(other.tag == "Player"){
 			PlayerController playerControl = other.gameObject.GetComponent<PlayerController>();
 			if(playerControl == null){
@@ -22,7 +21,6 @@ public class VisibilityManager : MonoBehaviour {
 			}else{
 				playerControl.UpdateFloorMask(gameObject.layer);
 			}
-			Debug.Log("Setting floor mask: " + gameObject.layer);
 		}
 	}
 }

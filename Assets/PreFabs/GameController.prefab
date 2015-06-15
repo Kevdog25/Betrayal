@@ -9,7 +9,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 455764}
   - 114: {fileID: 11435362}
-  - 114: {fileID: 11400742}
   - 114: {fileID: 11460666}
   m_Layer: 0
   m_Name: GameController
@@ -30,19 +29,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &11400742
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 118656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17575ef551dab2844802eabfb0d04640, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MeanderRate: .699999988
-  ConnectOnBranchTruncate: .100000001
 --- !u!114 &11435362
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -72,20 +58,15 @@ MonoBehaviour:
   DefaultRoomStyles:
   - {fileID: 156174, guid: e15b21478a176cc41b7b5a5a021a27d8, type: 2}
   House: {fileID: 194310, guid: d6fe2762fef38d44fadf3600e3f578af, type: 2}
-  HouseWidth: 20
-  HouseLength: 20
+  HouseWidth: 10
+  HouseLength: 10
   RandomizeRooms: 0
   RoomSize: 25
   FloorGenSetting: 3
   NumberOfFloors: 2
-  ShroudParticles: {fileID: 127704, guid: f6c81d6469bed4e418f3df2c40784df3, type: 2}
-  ShroudSizeRatio: 1
   Floor: {fileID: 188500, guid: dd7902c62cf2c4847a908084f55c9ce0, type: 2}
   DebugOverlay: 0
   DebugOverlaySquare: {fileID: 158326, guid: 5078e2c1c476c424d8be730467772008, type: 2}
-  DebugRoomStyle: {fileID: 156174, guid: 711885d7928aa9e498ad19cf3cab5c45, type: 2}
-  ShroudOn: 1
-  VisibleOnStart: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

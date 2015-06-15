@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /// a single element of a 2D array. Also, that each room can only connect
 /// to the 4 directions +Z,+X,-Z,-Z. Does not support arbitrary room shape
 /// or layout.</remarks>
-public class PathCreator : MonoBehaviour {
+public class PathCreator {
 
 	#region Public Variables
 	[Range(0,1)]
@@ -19,7 +19,11 @@ public class PathCreator : MonoBehaviour {
 		"running into another branch.")]
 	public float ConnectOnBranchTruncate;
 	#endregion
-	
+
+	public PathCreator(){
+		// This does not need to do anything atm.
+	}
+
 	/// <summary>
 	/// Randomizes the floor.
 	/// Enforces full doorification.
@@ -103,18 +107,37 @@ public class PathCreator : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Branches paths from the node.
+	/// Branches paths from the nodes.
 	/// Stops paths when they run into something.
+	/// If there are no currently open nodes, it will open the center one with 4 doors.
 	/// </summary>
-	public void BranchNode(int[] startNode,Room[,] floor){
-
-		floor[startNode[0],startNode[1]].SetDoors(new int[]{1,1,1,1});
-		floor[startNode[0],startNode[1]].Set = true;
+	public void Branch(Room[,] floor){
 
 		// Keep a list of the open nodes to extend
 		var openNodes = new List<int[]>();
-		openNodes.Add(startNode);
 
+		// Loop through the currently set rooms and add them
+		// all to the open nodes list.
+		int width = floor.GetLength(0);
+		int length = floor.GetLength(1);
+		for(var i = 0; i < width; i++){
+			for(var j = 0; j < length; j++){
+				if(floor[i,j].Set){
+					openNodes.Add(new int[]{i,j});
+				}
+			}
+		}
+
+		// If there were no starting points,
+		// make one at the center.
+		if(openNodes.Count == 0){
+			int[] node = new int[]{width/2,length/2};
+			floor[node[0],node[1]].Set = true;
+			floor[node[0],node[1]].NDoors = 4;
+			openNodes.Add(node);
+		}
+
+		// Run until you run out of paths.
 		while(openNodes.Count > 0){
 			var nextList = new List<int[]>();
 
@@ -122,17 +145,6 @@ public class PathCreator : MonoBehaviour {
 			for(var i = 0; i < openNodes.Count;i++){
 				int[] node = openNodes[i];
 				Room thisRoom = floor[node[0],node[1]];
-
-				// Randomize the number of doors in the room.
-				// Choose from a geometric distribution.
-				int nDoors = 1;
-				for(var d = 0; d <= 3;d++){
-					nDoors++;
-					if(Random.value < 0.8){
-						break;
-					}
-				}
-				thisRoom.NDoors = nDoors;
 
 				List<int[]> possible = GetPossibleMoves(node,floor);
 				for(var j=0;j<possible.Count;j++){
@@ -148,6 +160,15 @@ public class PathCreator : MonoBehaviour {
 						nextRoom.Set = true;
 						nextRoom.OpenTo(thisRoom);
 						nextList.Add (temp);
+						// Randomize the number of doors in the room.
+						int nDoors = 1;
+						for(var d = 0; d <= 3;d++){
+							nDoors++;
+							if(Random.value < 0.8){
+								break;
+							}
+						}
+						nextRoom.NDoors = nDoors;
 					}else{
 						// If the room is not already connected to this one.
 						if(!nextRoom.IsOpenTo(thisRoom)){
