@@ -1,17 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
 	public GameObject GameControl;
 
-	private bool isPaused = false;
-	private GameObject gameControl;
-    private MenuManager menuManager;
+	// Bool defaults to false;
+	bool isPaused;
+	GameObject gameControl;
+    MenuManager menuManager;
+	Scenario[] Scenarios;
 
 	// Use this for initialization
 	void Awake () {
         menuManager = GetComponent<MenuManager>();
+		Scenario scene = new Scenario();
+		scene.Name = "EmpyScenario";
+		scene.Save(Path.Combine(Application.dataPath,"../Scenarios/Empty.txt"));
+		LoadScenarios();
 	}
 	
 	// Update is called once per frame
@@ -25,22 +33,37 @@ public class GameManager : MonoBehaviour {
 	/// Activates the game.
 	/// </summary>
 	public void ActivateGame(){
-		//Create the game controller to run the game logic on.
+		// Create the game controller to run the game logic on.
 		gameControl = Instantiate (GameControl);
 		gameControl.SetActive (true);
+		gameControl.GetComponent<GameController>().Play(Scenarios[0]);
 
-		//Deactivate all active menus.
+		// Deactivate all active menus.
         menuManager.DeactivateMenus();
+	}
+
+	/// <summary>
+	/// Loads all the scenarios in the scenarios file.
+	/// </summary>
+	void LoadScenarios(){
+		var info = new DirectoryInfo(Path.Combine(Application.dataPath,"../Scenarios/"));
+		var fileInfo = info.GetFiles();
+		Scenarios = new Scenario[fileInfo.Length];
+		for(int i = 0; i < fileInfo.Length; i++){
+			Debug.Log("Loading Scenario: " + fileInfo[i].Name);
+			Scenarios[i] = Scenario.Load(fileInfo[i].FullName);
+
+		}
 	}
 
 	/// <summary>
 	/// Ends the game logic and returns to start menu.
 	/// </summary>
 	public void EndGame(){
-		//Destroy the game controller to reset any logic.
+		// Destroy the game controller to reset any logic.
 		DestroyImmediate (gameControl);
 
-		//Upause the game
+		// Upause the game
 		if (isPaused) {
 			TogglePause();
 		}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RandomRooms : Scenario {
+public class List : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

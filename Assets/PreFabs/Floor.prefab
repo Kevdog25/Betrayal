@@ -69,7 +69,7 @@ MonoBehaviour:
   ShroudSizeRatio: 1
   AllowedRoomStyles: []
   DebugRoomStyle: {fileID: 156174, guid: 711885d7928aa9e498ad19cf3cab5c45, type: 2}
-  ShroudOn: 1
+  ShroudOn: 0
   VisibleOnStart: 1
 --- !u!1001 &100100000
 Prefab:

@@ -19,13 +19,8 @@ public class GameController : MonoBehaviour {
 	Scenario scenario;
 	#endregion
 
-
 	// Use this for initialization
 	void Start () {
-		player = Instantiate (Player);
-		houseManager = GetComponent<HouseManager> ();
-		scenario = PickScenario ();
-		houseManager.Initialize (scenario);
 	}
 	
 	// Update is called once per frame
@@ -33,13 +28,12 @@ public class GameController : MonoBehaviour {
 	
 	}
 
-	/// <summary>
-	/// Picks the scenario for the game
-	/// </summary>
-	/// <returns>The scenario.</returns>
-	Scenario PickScenario(){
-		// Just return the first one.
-		return Scenarios [0].GetComponent<Scenario>();
+	public void Play(Scenario inScenario){
+		
+		player = Instantiate (Player);
+		houseManager = GetComponent<HouseManager> ();
+		houseManager.Initialize (inScenario);
+		scenario = inScenario;
 	}
 
 }

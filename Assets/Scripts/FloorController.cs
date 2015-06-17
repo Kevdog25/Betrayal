@@ -70,6 +70,24 @@ public class FloorController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Sets all of the rooms for a whole room array.
+	/// Give error if dimensions are wrong.
+	/// </summary>
+	/// <param name="floor">Floor.</param>
+	public void SetFloor(Room[,] floor){
+		if(floor.GetLength(0) != width ||
+		   floor.GetLength(1) != length){
+			Debug.LogError("Attempted to set rooms of floor from improper array.");
+			return;
+		}
+		for(var i = 0; i < width;i++){
+			for(var j = 0; j < length;j++){
+				SetRoom(new int[]{i,j},floor[i,j]);
+			}
+		}
+	}
+
+	/// <summary>
 	/// Initialize the specified inWidth, inLength, inRoomSize, allowedRoomStyles and inUniqueRooms.
 	/// </summary>
 	/// <param name="inWidth">In width.</param>

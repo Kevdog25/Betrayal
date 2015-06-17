@@ -71,7 +71,14 @@ public class HouseManager : MonoBehaviour {
 			floorControllers[i] = floorControl;
 		}
 
-		SetUpFloors();
+		if(scenario.FixedRooms == null){
+			SetUpFloors();
+		}else{
+			// Fill the floors in the house, up to the specified floors in the scenario.
+			for(var i = 0; i < scenario.FixedRooms.Length && i < NumberOfFloors;i++){
+				floorControllers[i].SetFloor(scenario.FixedRooms[i]);
+			}
+		}
 	}
 
 	/// <summary>
