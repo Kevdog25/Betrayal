@@ -18,6 +18,8 @@ public class FloorController : MonoBehaviour {
 	public bool ShroudOn;
 	[Tooltip("Should all rooms be visible on start?")]
 	public bool VisibleOnStart;
+	public int Width;
+	public int Length;
 
 	#region Private Variables
 	Room[,] rooms;
@@ -27,8 +29,6 @@ public class FloorController : MonoBehaviour {
 	PathCreator pathMaker;
 	GameObject shroud;
 	GameObject doors;
-	int width;
-	int length;
 	
 
 	#endregion
@@ -75,13 +75,13 @@ public class FloorController : MonoBehaviour {
 	/// </summary>
 	/// <param name="floor">Floor.</param>
 	public void SetFloor(Room[,] floor){
-		if(floor.GetLength(0) != width ||
-		   floor.GetLength(1) != length){
+		if(floor.GetLength(0) != Width ||
+		   floor.GetLength(1) != Length){
 			Debug.LogError("Attempted to set rooms of floor from improper array.");
 			return;
 		}
-		for(var i = 0; i < width;i++){
-			for(var j = 0; j < length;j++){
+		for(var i = 0; i < Width;i++){
+			for(var j = 0; j < Length;j++){
 				SetRoom(new int[]{i,j},floor[i,j]);
 			}
 		}
@@ -107,8 +107,8 @@ public class FloorController : MonoBehaviour {
 		doors = new GameObject();
 		doors.name = "Doors";
 		doors.transform.parent = transform;
-		width = inWidth;
-		length = inLength;
+		Width = inWidth;
+		Length = inLength;
 		roomSize = inRoomSize;
 
 		// Override any default values with the optional arguments.
@@ -127,15 +127,15 @@ public class FloorController : MonoBehaviour {
 			uniqueRooms = new List<GameObject>();
 		}
 
-		rooms = new Room[width,length];
+		rooms = new Room[Width,Length];
 		// Initialize the room array. 
-		for(int i = 0; i < width;i++){
-			for(int j = 0; j < length;j++){
+		for(int i = 0; i < Width;i++){
+			for(int j = 0; j < Length;j++){
 				rooms[i,j] = new Room();
 				rooms[i,j].Position = 
 					new Vector3((i+0.5f)*roomSize,0,(j+0.5f)*roomSize)
-						-new Vector3(roomSize * width/2f,
-						             0, roomSize*length/2f);
+						-new Vector3(roomSize * Width/2f,
+						             0, roomSize*Length/2f);
 			}
 		}
 		
@@ -144,11 +144,9 @@ public class FloorController : MonoBehaviour {
 		
 		// Set the trigger to be the size of the floor, and right in the middle;
 		floorTrigger.center = new Vector3(0,FloorHeight/2f,0);
-		floorTrigger.size = new Vector3(width * roomSize,
+		floorTrigger.size = new Vector3(Width * roomSize,
 		                                FloorHeight*0.8f,
-		                                length * roomSize);
-
-		Debug.Log("Floor initializing");
+		                                Length * roomSize);
 	}
 
 
@@ -202,8 +200,8 @@ public class FloorController : MonoBehaviour {
 		
 		// Now that the floors have been generated
 		// Set the rooms
-		for (int i=0; i<width; i++) {
-			for (int j=0; j<length; j++) {
+		for (int i=0; i<Width; i++) {
+			for (int j=0; j<Length; j++) {
 				// Cover the room with a shroud of smoke initially
 				GameObject shroudClone = Instantiate(ShroudParticles);
 				shroudClone.transform.localPosition += rooms[i,j].Position;
@@ -219,7 +217,7 @@ public class FloorController : MonoBehaviour {
 					
 					rooms[i,j].Position = 
 						new Vector3((i+0.5f)*roomSize,0,(j+0.5f)*roomSize)
-							-new Vector3(roomSize * width/2f, 0, roomSize*length/2f);
+							-new Vector3(roomSize * Width/2f, 0, roomSize*Length/2f);
 					
 					// Place the room in real space.
 					GameObject room = PlaceRoom(rooms[i,j]);
@@ -341,8 +339,8 @@ public class FloorController : MonoBehaviour {
 
 				// Find the closest room, so as to not
 				// disturb the generation much.
-				for(var j = 0; j < width; j++){
-					for(var k = 0; k < length;k++){
+				for(var j = 0; j < Width; j++){
+					for(var k = 0; k < Length;k++){
 						Vector3 d = rooms[j,k].Position - vecPos;
 						if(d.magnitude < minDistance){
 							minDistance = d.magnitude;
@@ -439,7 +437,7 @@ public class FloorController : MonoBehaviour {
 		var list = new List<int[]> ();
 		
 		// Start the average position at the centroid given.
-		int[] avgUniquePosition = new int[]{centroid[0],centroid[1]};
+		var avgUniquePosition = new int[]{centroid[0],centroid[1]};
 		
 		// Try to get the positions of each room randomly.
 		while(list.Count < nRooms){
