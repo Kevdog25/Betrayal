@@ -47,9 +47,13 @@ public class PlayerController : MonoBehaviour {
 		float h = Input.GetAxisRaw ("Horizontal");
 		float v = Input.GetAxisRaw ("Vertical");
 
-		Interact();
 		Move (h, v);
 		Turn ();
+	}
+
+	void Update(){
+		
+		Interact();
 	}
 
 	void Move(float h, float v)
