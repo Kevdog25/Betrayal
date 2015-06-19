@@ -2,13 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
+public struct Stats{
+	public float Speed;
+	public float Strength;
+	public float Intelligence;
+	public float Health;
+}
+
 public class PlayerController : MonoBehaviour {
 
 	#region Public Variables
-	public float Speed;
+	public Stats Stats;
 	public float JumpSpeed;
 	public float FallSpeed;
 	public int Layer;
+	public StatsManager statsManager;
 	#endregion
 
 	//public GameObject textCanvas;
@@ -29,6 +38,7 @@ public class PlayerController : MonoBehaviour {
 		Interactions = new List<Interactable>();
 		floorMask = LayerMask.GetMask ("Floor");
 		rigid = GetComponent<Rigidbody> (); 
+		statsManager.SetStats (Stats);
 		//textDisplay = textCanvas.GetComponent<DisplayText> ();
 	}
 	
@@ -45,7 +55,7 @@ public class PlayerController : MonoBehaviour {
 	void Move(float h, float v)
 	{
 		movement.Set(h,0,v);
-		movement = movement.normalized * Speed * Time.deltaTime;
+		movement = movement.normalized * Stats.Speed * Time.deltaTime;
 		if (Input.GetKey ("space"))
 			movement += new Vector3 (0, JumpSpeed, 0) * Time.deltaTime;
 		else if (Input.GetKey ("left shift"))
