@@ -17,8 +17,8 @@ public class GameManager : MonoBehaviour {
 	void Awake () {
         menuManager = GetComponent<MenuManager>();
 		Scenario scene = new Scenario();
-		scene.Name = "EmpyScenario";
-		scene.Save(Path.Combine(Application.dataPath,"../Scenarios/Empty.txt"));
+		scene.Name = "EmptyScenario";
+		scene.Save();
 		LoadScenarios();
 	}
 	

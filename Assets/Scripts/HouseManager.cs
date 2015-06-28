@@ -65,8 +65,10 @@ public class HouseManager : MonoBehaviour {
 			floor.transform.parent = house.transform;
 			floor.name = string.Format("Floor{0}",i);
 			FloorController floorControl = floor.GetComponent<FloorController>();
-			floorControl.Initialize(HouseWidth,HouseLength,RoomSize,allowedRoomStyles: DefaultRoomStyles);
+			floorControl.Initialize(HouseWidth,HouseLength,RoomSize);
 			floor.transform.position = new Vector3(0,i*floorControl.FloorHeight,HouseLength*RoomSize/2f);
+			floorControl.AllowedRoomStyles = DefaultRoomStyles;
+
 			floors[i] = floor;
 			floorControllers[i] = floorControl;
 		}

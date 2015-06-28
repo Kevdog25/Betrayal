@@ -29,8 +29,7 @@ public class FloorController : MonoBehaviour {
 	PathCreator pathMaker;
 	GameObject shroud;
 	GameObject doors;
-	
-
+	[SerializeField] GameObject DebugQuad;
 	#endregion
 
 	// Use this for initialization
@@ -95,9 +94,7 @@ public class FloorController : MonoBehaviour {
 	/// <param name="inRoomSize">In room size.</param>
 	/// <param name="allowedRoomStyles">Allowed room styles.</param>
 	/// <param name="inUniqueRooms">In unique rooms.</param>
-	public void Initialize(int inWidth, int inLength, float inRoomSize,
-	                       List<GameObject> allowedRoomStyles = null,
-	                       List<GameObject> inUniqueRooms = null){
+	public void Initialize(int inWidth, int inLength, float inRoomSize, bool editMode = false){
 
 		pathMaker = new PathCreator();
 		AllowedRoomStyles = new List<GameObject>();
@@ -111,21 +108,7 @@ public class FloorController : MonoBehaviour {
 		Length = inLength;
 		roomSize = inRoomSize;
 
-		// Override any default values with the optional arguments.
-		if(allowedRoomStyles != null){
-			for (int i = 0; i < allowedRoomStyles.Count; i++) {
-				AllowedRoomStyles.Add (allowedRoomStyles [i]);
-			}
-		}
-		if(inUniqueRooms != null){
-			for (int i = 0; i < inUniqueRooms.Count; i++) {
-				uniqueRooms.Add (inUniqueRooms [i]);
-			}
-		} else{
-			// uniqueRooms may be left empty.
-			// Their generation is then ignored in automatic set up
-			uniqueRooms = new List<GameObject>();
-		}
+		uniqueRooms = new List<GameObject>();
 
 		rooms = new Room[Width,Length];
 		// Initialize the room array. 
@@ -136,6 +119,13 @@ public class FloorController : MonoBehaviour {
 					new Vector3((i+0.5f)*roomSize,0,(j+0.5f)*roomSize)
 						-new Vector3(roomSize * Width/2f,
 						             0, roomSize*Length/2f);
+				if(editMode){
+					GameObject quad = Instantiate(DebugQuad);
+					quad.transform.position = rooms[i,j].Position;
+					quad.transform.localScale = new Vector3(1,1,1/roomSize) * roomSize;
+					quad.GetComponent<Renderer>().material.color = 
+						new Color(((i+j)%2)*255,((i+j)%2)*255,((i+j)%2)*255);
+				}
 			}
 		}
 		
@@ -335,7 +325,7 @@ public class FloorController : MonoBehaviour {
 			// If it isnt, then meander to it.
 			if(!rooms[pos[0],pos[1]].Set){
 				float minDistance = 10000;
-				int[] closestRoom =  new int[]{0,0};
+				var closestRoom =  new int[]{0,0};
 
 				// Find the closest room, so as to not
 				// disturb the generation much.

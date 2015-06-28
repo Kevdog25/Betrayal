@@ -7,39 +7,47 @@ using System.Runtime.Serialization.Formatters.Binary;
 [System.Serializable]
 public class Scenario {
 
-	[SerializeField]
 	public string Name;
-	[SerializeField]
+	public int HouseWidth;
+	public int HouseLength;
+	public float RoomSize;
 	public List<GameObject> AllowedFillerRooms;
 	public List<GameObject> UniqueRooms;
 	public Room[][,] FixedRooms;
+	public Dictionary<string,List<ScenarioComponent>> Components; 
 
+	static string saveFolder = Path.Combine(Application.dataPath,"../Scenarios/");
 
 	public Scenario(){
 		AllowedFillerRooms = new List<GameObject>();
 		UniqueRooms = new List<GameObject>();
 
+		Components = new Dictionary<string, List<ScenarioComponent>>();
+		Components.Add("Bad Guy",new List<ScenarioComponent>());
+		Components.Add("Bad Guys",new List<ScenarioComponent>());
+		Components.Add("Good Guy",new List<ScenarioComponent>());
+		Components.Add("Good Guys",new List<ScenarioComponent>());
 	}
 
 	/// <summary>
-	/// Save this object to the specified xml file.
+	/// Save this object to the specified binary file.
 	/// </summary>
 	/// <param name="path">Path.</param>
-	public void Save(string path){
+	public void Save(){
 		var binaryFormatter = new BinaryFormatter();
-		using(var stream = new FileStream(path,FileMode.Create)){
+		using(var stream = new FileStream(saveFolder + Name + ".txt",FileMode.Create)){
 			Debug.Log("Saving Scenario " + Name);
 			binaryFormatter.Serialize(stream,this);
 		}
 	}
 
 	/// <summary>
-	/// Load object from the specified xml file.
+	/// Load object from the specified binary file.
 	/// </summary>
-	/// <param name="path">Path.</param>
-	public static Scenario Load(string path){
+	/// <param name="name">Name of the scenario.</param>
+	public static Scenario Load(string name){
 		var binaryFormatter = new BinaryFormatter();
-		using(var stream = new FileStream(path,FileMode.Open)){
+		using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
 			return binaryFormatter.Deserialize(stream) as Scenario;
 		}
 	}
