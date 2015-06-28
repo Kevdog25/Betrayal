@@ -15,7 +15,7 @@ public class EditorManager : MonoBehaviour {
 	Scenario scenario;
 	List<FloorController> Floors;
 	const float defaultFloorHeight = 10;
-	const string defaultName = "New Scenario";
+	const string defaultName = "!New Scenario";
 	const float defaultRoomSize = 25f;
 	const int maxNumberOfFloors = 10;
 	int[] defaultDimensions = new int[]{10,10};
@@ -35,6 +35,7 @@ public class EditorManager : MonoBehaviour {
 	#region Editing Through Menu
 	/// <summary>
 	/// Loads the scenario for editing.
+	/// Makes a new scenario if it cant find the proper one.
 	/// </summary>
 	/// <param name="name">Name of the scenario to load.</param>
 	public void ShowScenario(string name = defaultName){
@@ -52,20 +53,45 @@ public class EditorManager : MonoBehaviour {
 		// make one with that name and isplay for editing.
 		if(!foundIt){
 			scenario = new Scenario();
-			scenario.Name = name;
 			scenario.HouseWidth = defaultDimensions[0];
 			scenario.HouseLength = defaultDimensions[1];
 			scenario.RoomSize = defaultRoomSize;
+
+			if(name == defaultName){
+				// Keep incrementing the name until you find a suitable
+				// New Scenario name.
+				int nameIndex = 0;
+
+				// If the index is 0, then dont consider it for the name
+				// If it is not 0, then go ahead and name it with the number
+				while(CheckName(nameIndex == 0 ? "New Scenario" : string.Format("New Scenario {0}",nameIndex))){
+					nameIndex++;
+				}
+				scenario.Name = nameIndex == 0 ? "New Scenario" : string.Format("New Scenario {0}",nameIndex);
+			}else{
+				// I dont think this should happen.
+				scenario.Name = name;
+			}
+
 		}
 
 		Menu.ViewScenario(scenario);
-		// If there is a new scenario,
-		// start it off with the same name warning.
-		if(scenario.Name == defaultName){
-			Menu.SameNameWarning(true);
+		ShowComponents(currentComponentType);
+	}
+
+	/// <summary>
+	/// Checks if this name is being used by a scenario.
+	/// </summary>
+	/// <returns><c>true</c>, if name was checked, <c>false</c> otherwise.</returns>
+	/// <param name="name">Name.</param>
+	bool CheckName(string name){
+		for(var i = 0; i < Scenarios.Length; i++){
+			if(name == Scenarios[i].Name){
+				return true;
+			}
 		}
 
-		ShowComponents(currentComponentType);
+		return false;
 	}
 
 	/// <summary>
@@ -137,12 +163,27 @@ public class EditorManager : MonoBehaviour {
  	}
 	
 	/// <summary>
+	/// Saves the working scenario.
+	/// Also, update the scene list.
+	/// </summary>
+	public void SaveScenario(){
+		var fromFile = Scenario.Load(scenario.Name);
+		if(fromFile == null ||
+		   !fromFile.OverwriteLock){
+			scenario.Save();
+			LoadScenarios();
+		} else{
+			Menu.OverwriteScenarioWarning();
+		}
+	}
+
+	/// <summary>
 	/// Saves the components on the current tab.
 	/// Protects against overwriting 
 	/// </summary>
 	public void SaveComponents(){
 		var workingComponents = scenario.Components[currentComponentType];
-		List<string> unsavedNames = new List<string>();
+		var unsavedNames = new List<string>();
 
 		LoadComponents();
 
@@ -312,28 +353,7 @@ public class EditorManager : MonoBehaviour {
 	/// </summary>
 	public void SetName(string value){
 		scenario.Name = value;
-		
-		// Tell the menu to update accordingly
-		CheckName(value);
 	} 
-
-	bool CheckName(string value){
-		bool sameName = value == defaultName;
-		// Check to see if an existing, different scenario
-		// has the same name.
-		if(!sameName){
-			for(var i = 0; i < Scenarios.Length; i++){
-				if(Scenarios[i].Name == value &&
-				   !Scenarios[i].Equals(scenario)){
-					sameName = true;
-					break;
-				}
-			}
-		}
-
-		Menu.SameNameWarning(sameName);
-		return sameName;
-	}
 	
 	/// <summary>
 	/// Sets the width of the house in the working scenario.
@@ -353,14 +373,6 @@ public class EditorManager : MonoBehaviour {
 	/// <param name="value">Value.</param>
 	public void SetRoomSize(string value){ float.TryParse(value,out scenario.RoomSize); }
 
-	/// <summary>
-	/// Saves the working scenario.
-	/// Also, update the scene list.
-	/// </summary>
-	public void SaveScenario(){
-		scenario.Save();
-		LoadScenarios();
-	}
 	#endregion
 
 	#region Component Values From Input Fields

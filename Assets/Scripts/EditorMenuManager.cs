@@ -56,7 +56,7 @@ public class EditorMenuManager : MonoBehaviour {
 
 		// Make a new scenario button that remains on the top.
 		Button newScenario = Instantiate (LayoutButton);
-		newScenario.GetComponentInChildren<Text>().text = "New Scenario";
+		newScenario.GetComponentInChildren<Text>().text = "Add Scenario";
 		var buttonTrans = newScenario.transform as RectTransform;
 		buttonTrans.SetParent(ScenarioList, false);
 		newScenario.onClick.AddListener(() => Editor.ShowScenario());
@@ -301,18 +301,12 @@ public class EditorMenuManager : MonoBehaviour {
 	}
 
 
-	// ! This method is dumb. !
 	/// <summary>
-	/// Sames the name warning.
+	/// Notifies the user that they are trying to overwrite 
+	/// and overwrite protected file.
 	/// </summary>
-	/// <remarks>Boy, do I love the automatic summary generator.</remarks>
-	/// <param name="isSameName">Is the current name in the field a repeat?.</param>
-	public void SameNameWarning(bool isSameName){
-		// Display a red bar thing to notify the player.
-		SameNameRedThing.gameObject.SetActive(isSameName);
-		// Disable the edit button so they cant proceed until
-		// it is resolved.
-		SaveButton.enabled = !isSameName;
+	public void OverwriteScenarioWarning(){
+		print ("Scenario Overwrite Warning");
 	}
 
 	/// <summary>

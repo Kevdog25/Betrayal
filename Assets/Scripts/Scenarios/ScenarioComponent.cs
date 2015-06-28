@@ -42,9 +42,13 @@ public abstract class ScenarioComponent{
 	/// <param name="name">Name of the component.</param>
 	public static ScenarioComponent Load(string name){
 		var binaryFormatter = new BinaryFormatter();
-		using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
-			return binaryFormatter.Deserialize(stream) as ScenarioComponent;
+		if(File.Exists(saveFolder + name)){
+			using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
+				return binaryFormatter.Deserialize(stream) as ScenarioComponent;
+			}
 		}
+
+		return null;
 	}
 
 	public abstract string[] GetTags();

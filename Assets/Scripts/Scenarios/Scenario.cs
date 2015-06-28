@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class Scenario {
 
 	public string Name;
+	public bool OverwriteLock;
 	public int HouseWidth;
 	public int HouseLength;
 	public float RoomSize;
@@ -47,8 +48,12 @@ public class Scenario {
 	/// <param name="name">Name of the scenario.</param>
 	public static Scenario Load(string name){
 		var binaryFormatter = new BinaryFormatter();
-		using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
-			return binaryFormatter.Deserialize(stream) as Scenario;
+		if(File.Exists(saveFolder + name)){
+			using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
+				return binaryFormatter.Deserialize(stream) as Scenario;
+			}
 		}
+
+		return null;
 	}
 }
