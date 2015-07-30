@@ -1816,7 +1816,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 11422068}
   m_HandleRect: {fileID: 22455912}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2955,8 +2955,7 @@ MonoBehaviour:
   SaveButton: {fileID: 11433888}
   ExposedComponentArea: {fileID: 22412402}
   ExposedComponentList: {fileID: 22472400}
-  ExposedComponent: {fileID: 149244, guid: c4ae40542739d09438fe7ad3c59b9ad9, type: 2}
-  ComponentProperty: {fileID: 100932, guid: 5bb22d7b35d17bb4ca54605b2acfdce3, type: 2}
+  ExposedComponent: {fileID: 113312, guid: 7316bee9b402a6a4586269b7a6606347, type: 2}
 --- !u!114 &11451690
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5741,7 +5740,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -10, y: 1.52587891e-05}
+  m_AnchoredPosition: {x: -10, y: -1.52587891e-05}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: .5, y: 1}
 --- !u!224 &22478824

@@ -35,7 +35,6 @@ public class EditorMenuManager : MonoBehaviour {
 	public RectTransform ExposedComponentArea;
 	public RectTransform ExposedComponentList;
 	public GameObject ExposedComponent;
-	public GameObject ComponentProperty;
 	#endregion
 
 	List<Button> scenarioButtons;
@@ -94,9 +93,10 @@ public class EditorMenuManager : MonoBehaviour {
 		// Give the button the ability to add a new floor.
 		editFloorToggle.PlusButton.onClick.AddListener(() => Editor.AddFloor());
 		
-		// Add the floor
+		// Add the floor.
 		floorToggles.Add(editFloorToggle);
 
+		// Set the button references.
 		SetFloorToggleListeners();
 	}
 
@@ -109,7 +109,13 @@ public class EditorMenuManager : MonoBehaviour {
 		floorToggles.RemoveAt(index);
 		DestroyImmediate(removedButton);
 
+		// Update the references.
 		SetFloorToggleListeners();
+
+		// Update the names.
+		for(var i = 0; i < floorToggles.Count; i++){
+			floorToggles[i].Text.text = string.Format("floor {0}",i+1);
+		}
 	}
 
 	/// <summary>
@@ -180,13 +186,18 @@ public class EditorMenuManager : MonoBehaviour {
 		heldButton.GetComponent<BetterClicks>().PointerUpListeners += () => DropButton();
 	}
 
+    /// <summary>
+    /// Drops the currently held component button.
+    /// Tries to add it to the list of components if it was dropped
+    /// on the existing list.
+    /// </summary>
 	public void DropButton(){
 		Vector2 mouse = Input.mousePosition - ExposedComponentArea.position;
 		mouse += ExposedComponentArea.rect.center;
 
 		if(ExposedComponentArea.rect.Contains(mouse)){
 			string componentName = heldButton.GetComponentInChildren<Text>().text;
-			Editor.AddComponent(componentName);
+			Editor.AddComponentToScenario(componentName);
 			print ("Adding component: " + componentName);
 		}
 		DestroyImmediate(heldButton.gameObject);
@@ -238,7 +249,7 @@ public class EditorMenuManager : MonoBehaviour {
 	/// Displays the components in the menu.
 	/// </summary>
 	/// <param name="components">Components.</param>
-	public void ViewComponents(List<ScenarioComponent> components){
+	public void ExposeComponents(List<ScenarioComponent> components){
 		for(var i = 0; i < componentEditItems.Count; i++){
 			DestroyImmediate(componentEditItems[i]);
 		}
@@ -246,60 +257,14 @@ public class EditorMenuManager : MonoBehaviour {
 
 		for(var i = 0; i < components.Count; i++){
 			ScenarioComponent comp = components[i];
-			var exposedCompListItem = Instantiate(ExposedComponent);
-			componentEditItems.Add(exposedCompListItem);
-			var exposedTrans = exposedCompListItem.transform as RectTransform;
-			exposedTrans.SetParent(ExposedComponentList,false);
-
-			// Put the name first, and handle it a little differently.
-			var nameField = Instantiate(ComponentProperty);
-			nameField.transform.SetParent(exposedTrans,false);
-			var nameInput = nameField.GetComponent<VariableInput>();
-			nameInput.Name.text = "Name";
-			nameInput.InputField.text = comp.Name;
-			nameInput.InputField.onEndEdit.AddListener((x) => {comp.Name = x;});
-
-			// Set up the input field for the string values.
-			foreach(KeyValuePair<string,string> pair in comp.GetStringProperties()){
-				var field = Instantiate(ComponentProperty);
-				field.transform.SetParent(exposedTrans,false);
-				var input = field.GetComponent<VariableInput>();
-				input.Name.text = pair.Key;
-				input.InputField.text = pair.Value;
-				input.InputField.onEndEdit.AddListener
-					(
-						(value) => {Editor.SetComponentString(comp,input.Name.text,value);}
-					);
-			}
-
-			// Set up the input field for the int values.
-			foreach(KeyValuePair<string,int> pair in comp.GetIntProperties()){
-				var field = Instantiate(ComponentProperty);
-				field.transform.SetParent(exposedTrans,false);
-				var input = field.GetComponent<VariableInput>();
-				input.Name.text = pair.Key;
-				input.InputField.text = pair.Value.ToString();
-				input.InputField.onEndEdit.AddListener
-					(
-						(value) => {Editor.SetComponentInt(comp,input.Name.text,value);}
-					);
-			}
-			
-			// Set up the input field for the int values.
-			foreach(KeyValuePair<string,float> pair in comp.GetFloatProperties()){
-				var field = Instantiate(ComponentProperty);
-				field.transform.SetParent(exposedTrans,false);
-				var input = field.GetComponent<VariableInput>();
-				input.Name.text = pair.Key;
-				input.InputField.text = pair.Value.ToString();
-				input.InputField.onEndEdit.AddListener
-					(
-						(value) => {Editor.SetComponentFloat(comp,input.Name.text,value);}
-					);
-			}
+            var exposedComponent = Instantiate(ExposedComponent);
+            ExposedComponent componentManager = exposedComponent.GetComponent<ExposedComponent>();
+            componentManager.Editor = Editor;
+            componentManager.ProcessComponent(comp);
+            exposedComponent.transform.SetParent(ExposedComponentList,false);
+            componentEditItems.Add(exposedComponent);
 		}
 	}
-
 
 	/// <summary>
 	/// Notifies the user that they are trying to overwrite 

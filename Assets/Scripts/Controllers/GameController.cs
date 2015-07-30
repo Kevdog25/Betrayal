@@ -13,11 +13,9 @@ public class GameController : MonoBehaviour {
 	// This is not the correct way to spawn a player
 	public GameObject Player;
 
-	#region Private Variables
 	GameObject player;
 	HouseManager houseManager;
 	Scenario scenario;
-	#endregion
 
 	// Use this for initialization
 	void Start () {

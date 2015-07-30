@@ -61,7 +61,6 @@ public class MenuManager : MonoBehaviour {
         PauseMenu.SetActive(false);
     }
 
-    #region Button Functionality
     /// <summary>
     /// Resets the menus to the initial starting points.
     /// </summary>
@@ -80,7 +79,6 @@ public class MenuManager : MonoBehaviour {
         gameManager.CloseGame();
     }
 
-	#region Network
 	/// <summary>
 	/// Starts a server through the NetworkManager.
 	/// </summary>
@@ -142,6 +140,4 @@ public class MenuManager : MonoBehaviour {
 	public void ConnectTo(HostData hostData){
 		networkManager.ConnectTo (hostData);
 	}
-	#endregion
-    #endregion
 }

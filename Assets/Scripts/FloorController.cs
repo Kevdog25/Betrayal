@@ -20,6 +20,7 @@ public class FloorController : MonoBehaviour {
 	public bool VisibleOnStart;
 	public int Width;
 	public int Length;
+    
 
 	#region Private Variables
 	Room[,] rooms;
@@ -29,6 +30,7 @@ public class FloorController : MonoBehaviour {
 	PathCreator pathMaker;
 	GameObject shroud;
 	GameObject doors;
+    GameObject roomSpaces;
 	[SerializeField] GameObject DebugQuad;
 	#endregion
 
@@ -98,6 +100,9 @@ public class FloorController : MonoBehaviour {
 
 		pathMaker = new PathCreator();
 		AllowedRoomStyles = new List<GameObject>();
+        roomSpaces = new GameObject();
+        roomSpaces.name = "RoomSpaces";
+        roomSpaces.transform.SetParent(transform,false);
 		shroud = new GameObject();
 		shroud.name = "Shroud";
 		shroud.transform.parent = transform;
@@ -125,6 +130,7 @@ public class FloorController : MonoBehaviour {
 					quad.transform.localScale = new Vector3(1,1,1/roomSize) * roomSize;
 					quad.GetComponent<Renderer>().material.color = 
 						new Color(((i+j)%2)*255,((i+j)%2)*255,((i+j)%2)*255);
+                    quad.transform.SetParent(roomSpaces.transform,false);
 				}
 			}
 		}

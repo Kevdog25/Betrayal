@@ -78,22 +78,7 @@ public class EditorManager : MonoBehaviour {
 		Menu.ViewScenario(scenario);
 		ShowComponents(currentComponentType);
 	}
-
-	/// <summary>
-	/// Checks if this name is being used by a scenario.
-	/// </summary>
-	/// <returns><c>true</c>, if name was checked, <c>false</c> otherwise.</returns>
-	/// <param name="name">Name.</param>
-	bool CheckName(string name){
-		for(var i = 0; i < Scenarios.Length; i++){
-			if(name == Scenarios[i].Name){
-				return true;
-			}
-		}
-
-		return false;
-	}
-
+	
 	/// <summary>
 	/// Tells the menu to display the components with
 	/// the chosen key.
@@ -101,11 +86,31 @@ public class EditorManager : MonoBehaviour {
 	/// <param name="type">Type.</param>
 	public void ShowComponents(string type){
 		currentComponentType = type;
-		print (type);
-		Menu.ViewComponents(scenario.Components[type]);
+		Menu.ExposeComponents(scenario.Components[type]);
 	}
 
-	public void AddComponent(string componentName){
+	/// <summary>
+	/// Checks if this name is being used by a scenario.
+	/// </summary>
+	/// <returns><c>true</c>, if name was checked, <c>false</c> otherwise.</returns>
+	/// <param name="name">Name.</param>
+	bool CheckName(string componentName){
+		for(var i = 0; i < Scenarios.Length; i++){
+			if(componentName == Scenarios[i].Name){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+    /// <summary>
+    /// Attempts to find the component with the same name
+    /// and add it to the current component.
+    /// Refreshes the UI.
+    /// </summary>
+    /// <param name="componentName"></param>
+	public void AddComponentToScenario(string componentName){
 		bool foundIt = false;
 		// Look throught the components to find the 
 		// correct saved component.
@@ -123,6 +128,32 @@ public class EditorManager : MonoBehaviour {
 		// Refresh the component display
 		ShowComponents(currentComponentType);
 	}
+
+    /// <summary>
+    /// Attempts to remove the component from the current working scenario.
+    /// Refreshes the UI.
+    /// </summary>
+    /// <param name="component"></param>
+    public void RemoveComponentFromScenario(ScenarioComponent component)
+    {
+        List<ScenarioComponent> components;
+        if(scenario.Components.TryGetValue(currentComponentType, out components))
+        {
+            if(components.Remove(component))
+            {
+                ShowComponents(currentComponentType);
+            }
+            else
+            {
+                Debug.LogError("Could not remove component: " + component.Name + 
+                " from scenario: " + scenario.Name + " in category: " + currentComponentType);
+            }
+        }
+        else
+        {
+            Debug.LogError("Cannot find scenario component of type " + currentFilter);
+        }
+    }
 
 	/// <summary>
 	/// Retrieves the scenarios from file.
@@ -144,6 +175,7 @@ public class EditorManager : MonoBehaviour {
 
 	/// <summary>
 	/// Loads all of the components in the save folder.
+    /// Then passes them to filter components.
 	/// </summary>
 	public void LoadComponents(){
 		var info = new DirectoryInfo(Path.Combine(Application.dataPath,"../ScenarioComponents/"));
@@ -180,12 +212,15 @@ public class EditorManager : MonoBehaviour {
 	/// <summary>
 	/// Saves the components on the current tab.
 	/// Protects against overwriting 
+	/// Does not protect against user editing multiple components, 
+	/// and then naming them the same unregistered name. They will overwrite
+	/// in a bad way if that happens.
 	/// </summary>
 	public void SaveComponents(){
 		var workingComponents = scenario.Components[currentComponentType];
 		var unsavedNames = new List<string>();
 
-		LoadComponents();
+		//LoadComponents();
 
 		for(var i = 0; i < workingComponents.Count; i++){
 			for(var j = 0; j < AllComponents.Count; j++){
@@ -208,7 +243,7 @@ public class EditorManager : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Filters the components and only displays those.
+	/// Filters the components and only display the result.
 	/// </summary>
 	public void FilterComponents(string filter = ""){
 		currentFilter = filter;
@@ -251,7 +286,7 @@ public class EditorManager : MonoBehaviour {
 	#region Editing Through World
 	/// <summary>
 	/// Adds the floor.
-	/// Checks to make sure there aren't too many rooms.
+	/// Checks to make sure there aren't too many floors.
 	/// </summary>
 	/// <param name="width">Width.</param>
 	/// <param name="length">Length.</param>
@@ -281,7 +316,9 @@ public class EditorManager : MonoBehaviour {
 		// Create a real GameObject floor to look at
 		// and for the player to edit.
 		GameObject floor = Instantiate(Floor);
-		floor.name = string.Format("Floor{0}",Floors.Count+1);
+		floor.name = string.Format("Floor {0}",Floors.Count+1);
+        for (int i = 0; i < Floors.Count; i++)
+            floor.transform.position += Floors[i].FloorHeight * Vector3.up;
 		FloorController floorControl = floor.GetComponent<FloorController>();
 		floorControl.Initialize(width,length,scenario.RoomSize,true);
 
@@ -308,6 +345,7 @@ public class EditorManager : MonoBehaviour {
 		// Lower each of the higher floors to fill the gap.
 		for(var i = index; i < Floors.Count; i++){
 			Floors[i].transform.position += Vector3.down * removedHeight;
+			Floors[i].name = string.Format("Floor {0}",i+1);
 		}
 
 		Menu.RemoveFloor(index);
@@ -337,7 +375,7 @@ public class EditorManager : MonoBehaviour {
 		   scenario.FixedRooms.Length == 0){
 			AddFloor();
 		}else{
-			// Add a floor for each of the "floors" in the scneario.
+			// Add a floor for each of the "floors" in the scenario.
 			for(var i = 0; i < scenario.FixedRooms.Length; i++){
 				AddFloor(scenario.FixedRooms[i].GetLength(0),
 				         scenario.FixedRooms[i].GetLength(1),

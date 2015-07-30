@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 [System.Serializable]
 public class Scenario {
+	public delegate bool EvaluateComponent(ScenarioComponent comp);
 
 	public string Name;
 	public bool OverwriteLock;
@@ -19,6 +20,12 @@ public class Scenario {
 
 	static string saveFolder = Path.Combine(Application.dataPath,"../Scenarios/");
 
+    int timeBetweenSegments = 300;
+    List<PlayerController> BadGuys;
+    List<PlayerController> GoodGuys;
+    [System.NonSerialized]
+    GameController ruleController;
+
 	public Scenario(){
 		AllowedFillerRooms = new List<GameObject>();
 		UniqueRooms = new List<GameObject>();
@@ -28,7 +35,62 @@ public class Scenario {
 		Components.Add("Bad Guys",new List<ScenarioComponent>());
 		Components.Add("Good Guy",new List<ScenarioComponent>());
 		Components.Add("Good Guys",new List<ScenarioComponent>());
+        Components.Add("Rules", new List<ScenarioComponent>());
+
+        BadGuys = new List<PlayerController>();
+        GoodGuys = new List<PlayerController>();
 	}
+
+    /// <summary>
+    /// Registers a bad guy to be affected by the 
+    /// bad guy specific components
+    /// </summary>
+    /// <param name="player">player controller to register</param>
+    public void RegisterBadGuy(PlayerController player)
+    {
+        BadGuys.Add(player);
+    }
+
+    /// <summary>
+    /// Registers a good guy to be affected by the 
+    /// good guy specific components
+    /// </summary>
+    /// <param name="player">player controller to register</param>
+    public void RegisterGoodGuy(PlayerController player)
+    {
+        GoodGuys.Add(player);
+    }
+
+    /// <summary>
+    /// Sets the object to have rule affecting components attached
+    /// to it. Warning gaurds against overwriting existing rules.
+    /// </summary>
+    /// <param name="controller">game controller to register</param>
+    public void RegisterGameController(GameController controller)
+    {
+        if(ruleController == null
+            || ruleController.GetComponent<ScenarioComponent>() == null)
+            ruleController = controller;
+        else
+        {
+            Debug.LogWarning("Trying to overwrite a rule controller" +
+                             "with rules in effect.");
+        }
+    }
+
+    public void Start()
+    {
+
+    }
+
+    /// <summary>
+    /// Controls the timing of scenario events.
+    /// </summary>
+    /// <returns>enumerator to delay execution.</returns>
+    IEnumerator Timings()
+    {
+        yield return new WaitForSeconds(timeBetweenSegments);
+    }
 
 	/// <summary>
 	/// Save this object to the specified binary file.
@@ -50,7 +112,14 @@ public class Scenario {
 		var binaryFormatter = new BinaryFormatter();
 		if(File.Exists(saveFolder + name)){
 			using(var stream = new FileStream(saveFolder + name,FileMode.Open)){
-				return binaryFormatter.Deserialize(stream) as Scenario;
+                try
+                {
+                    return binaryFormatter.Deserialize(stream) as Scenario;
+                }
+                catch(EndOfStreamException ex)
+                {
+                    throw new EndOfStreamException("Failed to load file: " + name,ex);
+                }
 			}
 		}
 
